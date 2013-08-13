@@ -1,0 +1,24 @@
+{
+    "name": "ruhrtalnet/menu-bundle",
+    "type": "symfony-bundle",
+    "description": "Provides an infrastructure for static menu structures.",
+    "keywords": ["menu", "static"],
+    "homepage": "https://github.com/manuelpichler",
+    "license": "BSD License",
+    "authors": [
+        {
+            "name": "Manuel Pichler",
+            "email": "manuel@ruhrtal.net"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "RuhrtalNet\\MenuBundle": "" }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "knplabs/knp-menu-bundle": "dev-master",
+        "knplabs/knp-menu": "dev-master"
+    },
+    "minimum-stability": "dev",
+    "target-dir": "RuhrtalNet/MenuBundle"
+}
