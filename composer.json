@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Provides an infrastructure for static menu structures.",
     "keywords": ["menu", "static"],
-    "homepage": "https://github.com/manuelpichler",
+    "homepage": "https://github.com/ruhrtalnet",
     "license": "BSD License",
     "authors": [
         {

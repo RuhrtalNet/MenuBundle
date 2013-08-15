@@ -76,6 +76,11 @@ class MenuItem
      */
     public $exclusive = false;
 
+    /**
+     * @var boolean
+     */
+    public $displayChildren = false;
+
     public function __construct(array $values = array())
     {
         foreach ($values as $name => $value) {

@@ -6,7 +6,7 @@ use RuhrtalNet\MenuBundle\DependencyInjection\Compiler\MenuTagCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class MenuBundle extends Bundle
+class RuhrtalNetMenuBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {

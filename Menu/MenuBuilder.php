@@ -8,6 +8,7 @@
 namespace RuhrtalNet\MenuBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
+use Knp\Menu\ItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -82,16 +83,26 @@ class MenuBuilder
      */
     protected function createMenuFromItems(array $items)
     {
+        $this->activateRoutes();
+
         $menu = $this->factory->createItem('root');
 
+        return $this->prepareMenuFromItems($menu, $items);
+    }
+
+    /**
+     * @param \Knp\Menu\ItemInterface $menu
+     * @param \RuhrtalNet\MenuBundle\Menu\MenuItem[] $items
+     * @return \Knp\Menu\ItemInterface
+     */
+    protected function prepareMenuFromItems(ItemInterface $menu, array $items)
+    {
         usort(
             $items,
             function (MenuItem $item0, MenuItem $item1) {
                 return $item0->order - $item1->order;
             }
         );
-
-        $this->activateRoutes();
 
         $hasActiveExclusive = false;
 
@@ -116,11 +127,19 @@ class MenuBuilder
 
             $child->setExtras(
                 array(
-                    'active' => isset($this->activePaths[$menuItem->path]),
-                    'disabled' => (boolean) $menuItem->disabled,
+                    'id'        => $menuItem->id,
+                    'active'    => isset($this->activePaths[$menuItem->path]),
+                    'disabled'  => (boolean) $menuItem->disabled,
                     'exclusive' => (boolean) $menuItem->exclusive,
                 )
             );
+
+            if ($menuItem->displayChildren && isset($this->menuItems[$menuItem->path])) {
+                $child = $this->prepareMenuFromItems(
+                    $child,
+                    $this->menuItems[$menuItem->path]
+                );
+            }
 
             if ($menuItem->exclusive && isset($this->activePaths[$menuItem->path])) {
                 $hasActiveExclusive = true;
