@@ -108,7 +108,7 @@ class MenuBuilder
 
         foreach ($items as $menuItem) {
 
-            if (false === $menuItem->visible) {
+            if (false === (boolean) $menuItem->visible) {
                 continue;
             }
 
