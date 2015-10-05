@@ -9,6 +9,7 @@ namespace RuhrtalNet\MenuBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use phpDocumentor\Reflection\DocBlock\Tag\ReturnTag;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -68,18 +69,30 @@ class MenuBuilder
 
     public function __call($method, $args)
     {
-        if (0 === preg_match('(^create([a-z0-9]+)Menu$)i', $method, $match)) {
-            throw new \BadMethodCallException("Unexpected method {$method}() called.");
+        if (preg_match('(^createBreadcrumb$)i', $method)) {
+            return $this->createBreadcrumbMenu();
         }
-        if (false === isset($this->menuItems[$match[1]])) {
-            throw new \OutOfBoundsException("Undefined menu {$match[1]} requested.");
+        if (preg_match('(^create([a-z0-9]+)Menu$)i', $method, $match)) {
+            return $this->createMenuFromPath($match[1]);
         }
-        return $this->createMenuFromItems($this->menuItems[$match[1]]);
+        throw new \BadMethodCallException("Unexpected method {$method}() called.");
+    }
+
+    /**
+     * @param string $path
+     * @return \Knp\Menu\ItemInterface
+     */
+    protected function createMenuFromPath($path)
+    {
+        if (false === isset($this->menuItems[$path])) {
+            throw new \OutOfBoundsException("Undefined menu {$path} requested.");
+        }
+        return $this->createMenuFromItems($this->menuItems[$path]);
     }
 
     /**
      * @param \RuhrtalNet\MenuBundle\Menu\MenuItem[] $items
-     * @return \Knp\Menu\ItemInterface
+     * @return \Knp\Menu\ItemInterface[]
      */
     protected function createMenuFromItems(array $items)
     {
@@ -88,6 +101,28 @@ class MenuBuilder
         $menu = $this->factory->createItem('root');
 
         return $this->prepareMenuFromItems($menu, $items);
+    }
+
+    /**
+     * @return \Knp\Menu\ItemInterface[]
+     */
+    protected function createBreadcrumbMenu()
+    {
+        $this->activateRoutes();
+
+        $items = array();
+        $paths = array_keys($this->activePaths);
+
+        for ($i = 1; $i < count($paths); ++$i) {
+            $path   = $paths[$i - 1];
+            $target = $paths[$i];
+
+            if (isset($this->menuItems[$target][$path])) {
+                $items[$path] = $this->menuItems[$target][$path];
+            }
+        }
+
+        return $this->createMenuFromItems($items);
     }
 
     /**
@@ -166,7 +201,7 @@ class MenuBuilder
         if (false === isset($this->menuItems[$target])) {
             throw new \InvalidArgumentException("No menu with name '{$target}' exists.");
         }
-        $this->menuItems[$target][] = $menuItem;
+        $this->menuItems[$target][$menuItem->path] = $menuItem;
 
         $this->pathMapping[$menuItem->path] = $menuItem->route;
     }
@@ -203,3 +238,4 @@ class MenuBuilder
         }
     }
 }
+
