@@ -20,6 +20,11 @@ class MenuItem
     /**
      * @var string
      */
+    public $icon;
+
+    /**
+     * @var string
+     */
     public $label;
 
     /**
