@@ -128,6 +128,8 @@ class MenuBuilder
             $child->setExtras(
                 array(
                     'id'        => $menuItem->id,
+                    'icon'      => $menuItem->icon,
+                    'route'     => $menuItem->route,
                     'active'    => isset($this->activePaths[$menuItem->path]),
                     'disabled'  => (boolean) $menuItem->disabled,
                     'exclusive' => (boolean) $menuItem->exclusive,
