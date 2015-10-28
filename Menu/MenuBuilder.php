@@ -73,7 +73,14 @@ class MenuBuilder
             return $this->createBreadcrumbMenu();
         }
         if (preg_match('(^create([a-z0-9]+)Menu$)i', $method, $match)) {
-            return $this->createMenuFromPath($match[1]);
+            $target = trim(preg_replace_callback(
+                '(([A-Z]))',
+                function ($m) {
+                    return ':' . $m[1];
+                },
+                $match[1]
+            ), ':');
+            return $this->createMenuFromPath($target);
         }
         throw new \BadMethodCallException("Unexpected method {$method}() called.");
     }
@@ -112,6 +119,7 @@ class MenuBuilder
 
         $items = array();
         $paths = array_keys($this->activePaths);
+        rsort($paths);
 
         for ($i = 1; $i < count($paths); ++$i) {
             $path   = $paths[$i - 1];
@@ -228,7 +236,10 @@ class MenuBuilder
         $this->activePaths = array();
 
         $route = $this->request->get('_route');
-        if ($path = array_search($route, $this->pathMapping)) {
+        foreach ($this->pathMapping as $path => $itemRoute) {
+            if ($itemRoute != $route) {
+                continue;
+            }
             $this->activePaths[$path] = true;
 
             $parts = explode(':', $path);
